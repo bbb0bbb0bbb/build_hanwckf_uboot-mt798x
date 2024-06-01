@@ -59,6 +59,7 @@ jobs:
         - name: Build it
           id: compile01
           run: |
+            cd /workdir/bl-mt798x
             ./build.sh
             echo "release_tag=bl-mt798x-Uboot-$(date +%Y.%m.%d)" >> $GITHUB_ENV
             echo "release_name=bl-mt798x-Uboot" >> $GITHUB_ENV
@@ -70,6 +71,7 @@ jobs:
         - name: Build it
           id: compile02
           run: |
+            cd /workdir/bl-mt798x
             ./build.sh
             echo "release_tag=bl-mt798x-Uboot-$(date +%Y.%m.%d)" >> $GITHUB_ENV
             echo "release_name=bl-mt798x-Uboot" >> $GITHUB_ENV
@@ -81,6 +83,7 @@ jobs:
         - name: Build it
           id: compile03
           run: |
+            cd /workdir/bl-mt798x
             ./build.sh
             echo "release_tag=bl-mt798x-Uboot-$(date +%Y.%m.%d)" >> $GITHUB_ENV
             echo "release_name=bl-mt798x-Uboot" >> $GITHUB_ENV
@@ -92,6 +95,7 @@ jobs:
         - name: Build it
           id: compile
           run: |
+            cd /workdir/bl-mt798x
             ./build.sh
             echo "release_tag=bl-mt798x-Uboot-$(date +%Y.%m.%d)" >> $GITHUB_ENV
             echo "release_name=bl-mt798x-Uboot" >> $GITHUB_ENV
