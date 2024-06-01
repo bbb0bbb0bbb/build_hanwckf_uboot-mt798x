@@ -1,0 +1,145 @@
+name: build-mt798x_Uboot CI Build
+#run-name: Uboot - mt798x
+
+on:
+  repository_dispatch:
+  workflow_dispatch:
+    inputs:
+      clean:
+         description: 'clean ccache'
+         default: 'false'
+
+  schedule:
+    - cron: '0 17 * * 1'
+
+env:
+  REPO_URL: https://github.com/hanwckf/bl-mt798x
+  REPO_BRANCH: master
+  #FEEDS_CONF: feeds.conf.default
+  #CONFIG_FILE: ./doc/config/mt7988.config
+  #DIY_P1_SH: ./doc/diy/diy-mt7988-hanwckf-1.sh
+  #DIY_P2_SH: ./doc/diy/diy-mt7988-padavanonly-2.sh
+  TZ: Asia/Shanghai
+  
+jobs:
+  ubuntu-build:
+    runs-on: ubuntu-22.04
+    permissions:
+      contents: write
+      
+    steps:
+        - name: Checkout
+          uses: actions/checkout@main
+    
+        - name: Prepare environment
+          env:
+            DEBIAN_FRONTEND: noninteractive
+          run: |
+             sudo rm -rf /etc/apt/sources.list.d/* /usr/share/dotnet /usr/local/lib/android /opt/ghc
+             sudo timedatectl set-timezone "$TZ"
+             sudo mkdir -p /workdir
+             sudo chown $USER:$GROUPS /workdir
+
+        - name: Clone source code
+          working-directory: /workdir
+          run: |
+             df -hT $PWD
+             git clone $REPO_URL -b $REPO_BRANCH bl-mt798x
+             ln -sf /workdir/bl-mt798x $GITHUB_WORKSPACE/bl-mt798x
+
+
+
+
+        - uses: actions/checkout@v4
+        - name: Get build dept.
+          run: |
+            sudo apt update
+            sudo apt install gcc-aarch64-linux-gnu build-essential flex bison libssl-dev
+        - name: Build it
+          id: compile01
+          run: |
+            ./build.sh
+            echo "release_tag=bl-mt798x-Uboot-$(date +%Y.%m.%d)" >> $GITHUB_ENV
+            echo "release_name=bl-mt798x-Uboot" >> $GITHUB_ENV
+            echo "status=success" >> $GITHUB_OUTPUT
+          env:
+            SOC: mt7981
+            BOARD: ax3000t
+            MULTI_LAYOUT: 0
+        - name: Build it
+          id: compile02
+          run: |
+            ./build.sh
+            echo "release_tag=bl-mt798x-Uboot-$(date +%Y.%m.%d)" >> $GITHUB_ENV
+            echo "release_name=bl-mt798x-Uboot" >> $GITHUB_ENV
+            echo "status=success" >> $GITHUB_OUTPUT
+          env:
+            SOC: mt7981
+            BOARD: 360t7
+            MULTI_LAYOUT: 0    
+        - name: Build it
+          id: compile03
+          run: |
+            ./build.sh
+            echo "release_tag=bl-mt798x-Uboot-$(date +%Y.%m.%d)" >> $GITHUB_ENV
+            echo "release_name=bl-mt798x-Uboot" >> $GITHUB_ENV
+            echo "status=success" >> $GITHUB_OUTPUT
+          env:
+            SOC: mt7981
+            BOARD: cmcc_rax3000m-emmc
+            MULTI_LAYOUT: 0
+        - name: Build it
+          id: compile
+          run: |
+            ./build.sh
+            echo "release_tag=bl-mt798x-Uboot-$(date +%Y.%m.%d)" >> $GITHUB_ENV
+            echo "release_name=bl-mt798x-Uboot" >> $GITHUB_ENV
+            echo "status=success" >> $GITHUB_OUTPUT
+          env:
+            SOC: mt7981
+            BOARD: cmcc_rax3000m
+            MULTI_LAYOUT: 0
+          
+        - name: Upload Uboot directory
+          uses: actions/upload-artifact@v4
+          with:
+            #name: Uboot - ${{ inputs.board }} (${{ inputs.soc }})
+            name: ${{ env.release_tag }}
+            path: output/*.bin
+          
+        - name: Check space usage
+          if: (!cancelled())
+          run: df -hT
+
+        - name: Organize files
+          id: organize
+          if: steps.compile.outputs.status == 'success' && !cancelled()
+          run: |
+             #  tar -cvf openwrt/bin/targets/mediatek/mt7981/packages.tar openwrt/bin/packages
+             cd output
+             rm -rf packages
+             rm -rf feeds.buildinfo
+             rm -rf sha256sums
+             rm -rf version.buildinfo
+             rm -rf *kernel.bin
+             rm -rf *manifest
+             rm -rf *tar.bz2
+             echo "FIRMWARE=$PWD" >> $GITHUB_ENV
+             echo "status=success" >> $GITHUB_OUTPUT
+        
+        - name: Upload firmware to release
+          uses: softprops/action-gh-release@v2
+          if: steps.organize.outputs.status == 'success' && !cancelled()
+          with:
+             name: ${{ env.release_name }}
+             tag_name: ${{ env.release_tag }}
+             body: |
+               Application：${{ inputs.board }} (${{ inputs.soc }})
+             files: ${{ env.FIRMWARE }}/*
+
+        - name: Delete older releases
+          uses: dev-drprasad/delete-older-releases@v0.3.3
+          with:
+            keep_latest: 3
+          env:
+            GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
