@@ -62,13 +62,10 @@ jobs:
           run: |
             cd /workdir/bl-mt798x
             ./build.sh
-            cd
-            ls
-            cd
-            ls
             echo "release_tag=bl-mt798x-Uboot-$(date +%Y.%m.%d)" >> $GITHUB_ENV
             echo "release_name=bl-mt798x-Uboot" >> $GITHUB_ENV
             echo "status=success" >> $GITHUB_OUTPUT
+            find / -name output -type d
           env:
             SOC: mt7981
             BOARD: cmcc_rax3000m
