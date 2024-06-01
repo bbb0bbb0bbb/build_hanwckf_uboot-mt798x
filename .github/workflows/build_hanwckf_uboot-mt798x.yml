@@ -58,6 +58,7 @@ jobs:
         - name: Build it
           id: compile01
           run: |
+            cd /workdir/bl-mt798x
             ./build.sh
             echo "release_tag=bl-mt798x-Uboot-$(date +%Y.%m.%d)" >> $GITHUB_ENV
             echo "release_name=bl-mt798x-Uboot" >> $GITHUB_ENV
