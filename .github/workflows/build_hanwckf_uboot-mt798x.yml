@@ -56,47 +56,16 @@ jobs:
             sudo apt update
             sudo apt install gcc-aarch64-linux-gnu build-essential flex bison libssl-dev
             cd /workdir/bl-mt798x
-        - name: Build it
-          id: compile01
-          run: |
-            cd /workdir/bl-mt798x
-            ./build.sh
-            echo "release_tag=bl-mt798x-Uboot-$(date +%Y.%m.%d)" >> $GITHUB_ENV
-            echo "release_name=bl-mt798x-Uboot" >> $GITHUB_ENV
-            echo "status=success" >> $GITHUB_OUTPUT
-          env:
-            SOC: mt7981
-            BOARD: ax3000t
-            MULTI_LAYOUT: 0
-        - name: Build it
-          id: compile02
-          run: |
-            cd /workdir/bl-mt798x
-            ./build.sh
-            echo "release_tag=bl-mt798x-Uboot-$(date +%Y.%m.%d)" >> $GITHUB_ENV
-            echo "release_name=bl-mt798x-Uboot" >> $GITHUB_ENV
-            echo "status=success" >> $GITHUB_OUTPUT
-          env:
-            SOC: mt7981
-            BOARD: 360t7
-            MULTI_LAYOUT: 0    
-        - name: Build it
-          id: compile03
-          run: |
-            cd /workdir/bl-mt798x
-            ./build.sh
-            echo "release_tag=bl-mt798x-Uboot-$(date +%Y.%m.%d)" >> $GITHUB_ENV
-            echo "release_name=bl-mt798x-Uboot" >> $GITHUB_ENV
-            echo "status=success" >> $GITHUB_OUTPUT
-          env:
-            SOC: mt7981
-            BOARD: cmcc_rax3000m-emmc
-            MULTI_LAYOUT: 0
+
         - name: Build it
           id: compile
           run: |
             cd /workdir/bl-mt798x
             ./build.sh
+            cd
+            ls
+            cd
+            ls
             echo "release_tag=bl-mt798x-Uboot-$(date +%Y.%m.%d)" >> $GITHUB_ENV
             echo "release_name=bl-mt798x-Uboot" >> $GITHUB_ENV
             echo "status=success" >> $GITHUB_OUTPUT
