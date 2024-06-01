@@ -65,7 +65,7 @@ jobs:
             echo "release_tag=bl-mt798x-Uboot-$(date +%Y.%m.%d)" >> $GITHUB_ENV
             echo "release_name=bl-mt798x-Uboot" >> $GITHUB_ENV
             echo "status=success" >> $GITHUB_OUTPUT
-            find / -name output -type d
+#            find / -name output -type d
           env:
             SOC: mt7981
             BOARD: cmcc_rax3000m
@@ -76,7 +76,7 @@ jobs:
           with:
             #name: Uboot - ${{ inputs.board }} (${{ inputs.soc }})
             name: ${{ env.release_tag }}
-            path: output/*.bin
+            path: /workdir/bl-mt798x/output/*.bin
           
         - name: Check space usage
           if: (!cancelled())
@@ -87,7 +87,7 @@ jobs:
           if: steps.compile.outputs.status == 'success' && !cancelled()
           run: |
              #  tar -cvf openwrt/bin/targets/mediatek/mt7981/packages.tar openwrt/bin/packages
-             cd output
+             cd /workdir/bl-mt798x/output
              rm -rf packages
              rm -rf feeds.buildinfo
              rm -rf sha256sums
